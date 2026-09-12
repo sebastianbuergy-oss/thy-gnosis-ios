@@ -11,6 +11,9 @@ workflows:
       vars:
         HOMEBREW_NO_AUTO_UPDATE: '1'
         HOMEBREW_NO_INSTALL_CLEANUP: '1'
+        # altool cannot resolve a brand new bundle id on its own; the app
+        # record is Thy Gnosis (created 2026-09-12).
+        APP_STORE_APPLE_ID: '6811436478'
       # Codemagic validates signing against its own stored identities, not
       # against App Store Connect, so distribution_type/bundle_identifier
       # fails for a fresh bundle id with "No matching profiles found".
