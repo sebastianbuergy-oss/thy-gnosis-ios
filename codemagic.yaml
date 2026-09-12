@@ -11,14 +11,17 @@ workflows:
       vars:
         HOMEBREW_NO_AUTO_UPDATE: '1'
         HOMEBREW_NO_INSTALL_CLEANUP: '1'
-      # The App Store profile "ThyGnosis ios_app_store 20260912" was created in
-      # App Store Connect on 2026-09-12 and carries both distribution
-      # certificates of the account, so this fetch finds a matching pair.
-      # Without an existing profile the first build fails with
-      # "No matching profiles found for bundle identifier ...".
+      # Codemagic validates signing against its own stored identities, not
+      # against App Store Connect, so distribution_type/bundle_identifier
+      # fails for a fresh bundle id with "No matching profiles found".
+      # The profile was created in ASC on 2026-09-12 ("ThyGnosis
+      # ios_app_store 20260912") and uploaded here under the name below;
+      # the certificate is the only one Codemagic holds a private key for.
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.sebastianbuergy.thygnosis
+        provisioning_profiles:
+          - thy-gnosis-appstore-20260912
+        certificates:
+          - gosafehome-distribution
     scripts:
       - name: Preflight and generate project
         script: |
