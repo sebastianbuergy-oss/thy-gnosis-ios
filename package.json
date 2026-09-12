@@ -1,0 +1,7 @@
+{
+  "name": "thy-gnosis-ios-verification",
+  "private": true,
+  "scripts": {
+    "check": "node scripts/preflight.cjs"
+  }
+}

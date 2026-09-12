@@ -1,0 +1,7 @@
+.DS_Store
+.swiftpm/
+build/
+DerivedData/
+ThyGnosis.xcodeproj/
+node_modules/
+npm-debug.log*

@@ -1,0 +1,59 @@
+workflows:
+  ios-testflight:
+    name: Thy Gnosis - TestFlight (App Store signing)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    integrations:
+      app_store_connect: Codemagic
+    environment:
+      xcode: latest
+      node: '24'
+      vars:
+        HOMEBREW_NO_AUTO_UPDATE: '1'
+        HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.sebastianbuergy.thygnosis
+    scripts:
+      - name: Preflight and generate project
+        script: |
+          set -euo pipefail
+          npm run check
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+          xcodegen generate
+      - name: Use the Codemagic build number
+        script: |
+          set -euo pipefail
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/g" ThyGnosis.xcodeproj/project.pbxproj
+          grep -c "CURRENT_PROJECT_VERSION = $BUILD_NUMBER;" ThyGnosis.xcodeproj/project.pbxproj
+      - name: Set up App Store signing
+        script: xcode-project use-profiles
+      - name: Archive for TestFlight
+        script: |
+          set -euo pipefail
+          xcode-project build-ipa --project ThyGnosis.xcodeproj --scheme ThyGnosis --config Release
+      - name: Verify signed IPA
+        script: |
+          set -euo pipefail
+          IPA_PATH="$(find build/ios/ipa -maxdepth 1 -name '*.ipa' -type f | head -n 1)"
+          test -n "$IPA_PATH"
+          VERIFY_DIR="$(mktemp -d)"
+          unzip -q "$IPA_PATH" -d "$VERIFY_DIR"
+          APP_PATH="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
+          test -n "$APP_PATH"
+          APP_INFO="$APP_PATH/Info.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_INFO")" = "com.sebastianbuergy.thygnosis"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_INFO")" = "$BUILD_NUMBER"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :ITSAppUsesNonExemptEncryption' "$APP_INFO")" = "false"
+          test -f "$APP_PATH/web/index.html"
+          test -f "$APP_PATH/web/img/logo.png"
+          test -f "$APP_PATH/web/fonts/fonts.css"
+          codesign --verify --deep --strict "$APP_PATH"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false

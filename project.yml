@@ -1,0 +1,63 @@
+name: ThyGnosis
+configs:
+  Debug: debug
+  Release: release
+options:
+  bundleIdPrefix: com.sebastianbuergy
+  deploymentTarget:
+    iOS: '16.0'
+  xcodeVersion: '26.0'
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    TARGETED_DEVICE_FAMILY: '1'
+    SUPPORTS_MACCATALYST: NO
+    SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+    SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+    IPHONEOS_DEPLOYMENT_TARGET: '16.0'
+    MARKETING_VERSION: '1.0'
+    CURRENT_PROJECT_VERSION: '1'
+    DEVELOPMENT_TEAM: 38A4N26LD5
+    CODE_SIGN_STYLE: Automatic
+    PRODUCT_BUNDLE_IDENTIFIER: com.sebastianbuergy.thygnosis
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  ThyGnosis:
+    type: application
+    platform: iOS
+    deploymentTarget: '16.0'
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: '1'
+    sources:
+      - path: App
+        excludes: ['Info.plist']
+      - path: web
+        type: folder
+        buildPhase: resources
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Thy Gnosis
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIRequiresFullScreen: true
+        UIViewControllerBasedStatusBarAppearance: true
+        UIUserInterfaceStyle: Dark
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationQueriesSchemes: [mailto]
+schemes:
+  ThyGnosis:
+    build:
+      targets:
+        ThyGnosis: all
+    run:
+      config: Debug
+    archive:
+      config: Release
