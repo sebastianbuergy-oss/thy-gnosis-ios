@@ -68,3 +68,55 @@ workflows:
         auth: integration
         submit_to_testflight: true
         submit_to_app_store: false
+
+  ios-adhoc:
+    name: Thy Gnosis - Ad Hoc (direkt aufs iPhone)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      xcode: latest
+      node: '24'
+      vars:
+        HOMEBREW_NO_AUTO_UPDATE: '1'
+        HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      # Ad-hoc-Profil mit den beiden registrierten iPhones. Damit laesst sich
+      # die App ueber eine itms-services-Seite ohne TestFlight installieren.
+      ios_signing:
+        provisioning_profiles:
+          - thy-gnosis-adhoc-20260913
+        certificates:
+          - gosafehome-distribution
+    scripts:
+      - name: Preflight and generate project
+        script: |
+          set -euo pipefail
+          npm run check
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+          xcodegen generate
+      - name: Use the Codemagic build number
+        script: |
+          set -euo pipefail
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/g" ThyGnosis.xcodeproj/project.pbxproj
+      - name: Set up ad hoc signing
+        script: xcode-project use-profiles
+      - name: Archive
+        script: |
+          set -euo pipefail
+          xcode-project build-ipa --project ThyGnosis.xcodeproj --scheme ThyGnosis --config Release
+      - name: Verify ad hoc IPA
+        script: |
+          set -euo pipefail
+          IPA_PATH="$(find build/ios/ipa -maxdepth 1 -name '*.ipa' -type f | head -n 1)"
+          test -n "$IPA_PATH"
+          VERIFY_DIR="$(mktemp -d)"
+          unzip -q "$IPA_PATH" -d "$VERIFY_DIR"
+          APP_PATH="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -name '*.app' -type d | head -n 1)"
+          security cms -D -i "$APP_PATH/embedded.mobileprovision" > "$VERIFY_DIR/profile.plist"
+          # Ein Ad-hoc-Profil MUSS Geraete auflisten, sonst ist es das falsche.
+          /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' "$VERIFY_DIR/profile.plist" > /dev/null
+          test -f "$APP_PATH/web/index.html"
+          codesign --verify --deep --strict "$APP_PATH"
+          mv "$IPA_PATH" "build/ios/ipa/thy-gnosis.ipa"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
