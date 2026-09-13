@@ -1,17 +1,17 @@
 {
-  "updated": "2026-09-12",
+  "updated": "2026-09-13",
   "message": null,
   "upcoming": [
     {
       "date": "2026-09-27",
       "time": "19:00",
-      "title": "Support für Baest (DK)",
-      "venue": "Kiff",
+      "title": "Thy Gnosis as support for Baest @Kiff",
+      "venue": "Thy Gnosis as support for Baest @Kiff ",
       "city": "Aarau",
-      "lineup": "Baest, Deadnate, Thy Gnosis",
+      "lineup": "Thy Gnosis, BAEST, Deadnate",
       "note": "Thy Gnosis eröffnet für die dänische Death-Metal-Band Baest auf ihrer «Colossal»-Tour.",
       "tickets": "https://www.seetickets.com/ch/event/baest-dk-/kiff-foyer/3625845",
-      "url": "https://www.bandsintown.com/e/108721934",
+      "url": "https://www.bandsintown.com/e/108721934?app_id=js_thygnosis.com&came_from=267&utm_medium=api&utm_source=public_api&utm_campaign=event",
       "preview": "https://www.metalinside.ch/2026/09/baest-kiff-aarau-2026-preview/"
     }
   ],
