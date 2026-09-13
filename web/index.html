@@ -18,7 +18,7 @@
   --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
-html{color-scheme:dark;-webkit-text-size-adjust:100%}
+html{color-scheme:dark;-webkit-text-size-adjust:100%;overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:rgba(255,255,255,.08);overscroll-behavior-y:none}
 a{color:inherit}
 img{display:block;max-width:100%}
@@ -31,7 +31,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .top img{width:34px;height:31px}
 .top .name{font-family:var(--display);font-size:24px;letter-spacing:.02em;line-height:1}
 .top .sub{font-family:var(--cond);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.top .live{margin-left:auto;font-family:var(--cond);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);background:var(--blood);padding:5px 10px;border-radius:2px;text-decoration:none;white-space:nowrap}
+.top .live{margin-left:auto;font-family:var(--cond);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);background:var(--blood);padding:5px 10px;border-radius:2px;text-decoration:none;white-space:nowrap;min-width:0;max-width:62%;overflow:hidden;text-overflow:ellipsis}
 .top .live:empty{display:none}
 main{flex:1;padding:0 0 calc(var(--tab) + var(--sab) + 24px)}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 16px}
@@ -625,7 +625,7 @@ function renderUpcoming(list, meta){
   }
   renderNext(gigs[0]||null);
   const badge = document.getElementById('livebadge');
-  badge.textContent = gigs[0] ? `Live ${dateParts(gigs[0].date).d}.${String(new Date(gigs[0].date+'T12:00:00').getMonth()+1).padStart(2,'0')}. ${gigs[0].venue||''} ${gigs[0].city||''}`.trim() : '';
+  badge.textContent = gigs[0] ? `Live ${dateParts(gigs[0].date).d}.${String(new Date(gigs[0].date+'T12:00:00').getMonth()+1).padStart(2,'0')}. ${gigs[0].city||gigs[0].venue||''}`.trim() : '';
   const stamp = document.getElementById('stamp-upcoming');
   stamp.textContent = meta;
   stamp.className = 'stamp' + (meta.startsWith('Live') ? ' live' : '');
